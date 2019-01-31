@@ -13747,52 +13747,29 @@ module.exports = withPublic
         return vector;
     }
 
-    function tf(word, text) {
-        var input = word.toLowerCase();
-        var dict = extractDictionary(text).dict;
-        return dict[input] / tokenize(text).length;
-    }
-
-
-    function wordInDocsCount(word, textlist) {
-        var sum = 0;
-        textlist.forEach(function (text) {
-            sum += tokenize(text).indexOf(word) > -1 ? 1 : 0;
-        });
-        return sum;
-    }
-
-    function idf(word, textlist) {
-        return Math.log(textlist.length / (1 + wordInDocsCount(word, textlist)));
-    }
-
-    function tfidf(word, text, textlist) {
-        return tf(word, text) * idf(word, textlist);
-    }
-
     function loadDictionary() {
         return __webpack_require__(164);
     }
 
     function loadIdf() {
-        var json = __webpack_require__(165);
-        return json;
+        return __webpack_require__(165);
     }
 
     function tfidf_transform(text){
         const vocab = loadDictionary();
         var bag_of_text = bow(text,vocab);
         var idf_loaded = loadIdf();
+
         bag_of_text.forEach(function (val, idx) {
-            bag_of_text[idx] = val/*tf*/ * idf_loaded[idx];
+            bag_of_text[idx] = val * idf_loaded[idx];//perform tf-idf transformation, similar to sklearn TfIdfVectorizer implementation
         });
+
         return bag_of_text;
     }
 
     module.exports = {
         dict: extractDictionary,
         bow: bow,
-        tfidf: tfidf,
         tokenize: tokenize,
         tfidf_transform: tfidf_transform,
         loadIdf: loadIdf,
@@ -23324,17 +23301,19 @@ var tfidf = __webpack_require__(77);
 // CONCATENATED MODULE: ./src/nlp.js
 
 
+
+
 chrome.runtime.onInstalled.addListener(function() {
+
     chrome.contextMenus.create({contexts:["selection"], title:"Analyze text", id:"analyze"});
+
     chrome.contextMenus.onClicked.addListener(async function (info) {
-        var text = info.selectionText;
-        // Define a model for linear regression
-        const model = await loadModel("model.json");
-        var vals = tfidf["tfidf_transform"](text);
-        //var vals1 = require("../dist/transformed.json");
+
+        const vals = tfidf["tfidf_transform"](info.selectionText),
+            model = await loadModel("model.json");
+
         model.predict(tf_core_esm["Hc" /* tensor2d */](vals, [1,vals.length])).print();
-        console.log(vals);
-        // console.log(Math.max.apply(null,vals1[0]));
+
     })
 });
 

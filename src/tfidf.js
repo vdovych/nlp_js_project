@@ -46,52 +46,29 @@
         return vector;
     }
 
-    function tf(word, text) {
-        var input = word.toLowerCase();
-        var dict = extractDictionary(text).dict;
-        return dict[input] / tokenize(text).length;
-    }
-
-
-    function wordInDocsCount(word, textlist) {
-        var sum = 0;
-        textlist.forEach(function (text) {
-            sum += tokenize(text).indexOf(word) > -1 ? 1 : 0;
-        });
-        return sum;
-    }
-
-    function idf(word, textlist) {
-        return Math.log(textlist.length / (1 + wordInDocsCount(word, textlist)));
-    }
-
-    function tfidf(word, text, textlist) {
-        return tf(word, text) * idf(word, textlist);
-    }
-
     function loadDictionary() {
         return require("../dist/tfidf_vocab.json");
     }
 
     function loadIdf() {
-        var json = require("../dist/idf_.json");
-        return json;
+        return require("../dist/idf_.json");
     }
 
     function tfidf_transform(text){
         const vocab = loadDictionary();
         var bag_of_text = bow(text,vocab);
         var idf_loaded = loadIdf();
+
         bag_of_text.forEach(function (val, idx) {
-            bag_of_text[idx] = val/*tf*/ * idf_loaded[idx];
+            bag_of_text[idx] = val * idf_loaded[idx];//perform tf-idf transformation, similar to sklearn TfIdfVectorizer implementation
         });
+
         return bag_of_text;
     }
 
     module.exports = {
         dict: extractDictionary,
         bow: bow,
-        tfidf: tfidf,
         tokenize: tokenize,
         tfidf_transform: tfidf_transform,
         loadIdf: loadIdf,
