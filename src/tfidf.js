@@ -2,13 +2,14 @@
 
     function tokenize(text) {
         return text.match(/\b\w\w+\b/g)
-            // .replace(/'/g, '')
-            // .replace(/[^A-Za-zА-Яа-яçÇğĞıİöÖşŞüÜ0-9_]/g, ' ')
-            // .replace(/\s\s+/g, ' ')
-            // .split(' ')
             .map(function (s) {
                 return s.toLowerCase();
-            });
+            })
+            .concat(text.match(/(\b\w\w+\b\W+\b\w\w+\b)/g)
+            .map(function (s) {
+                return s.toLowerCase();
+            }));
+
     }
 
     function extractDictionary(textArray) {
@@ -18,6 +19,7 @@
         textArray = Array.isArray(textArray) ? textArray : [textArray];
         textArray.forEach(function (text) {
             words = tokenize(text);
+            console.log(words);
             words.forEach(function (word) {
                 word = word.toLowerCase();
                 if (!dict[word] && word !== '') {

@@ -1,11 +1,18 @@
 {
-  "name": "Getting Started Example",
+  "name": "Text analyzer",
   "version": "1.0",
   "description": "Build an Extension!",
   "permissions": ["activeTab", "declarativeContent", "storage", "contextMenus"],
   "background": {
     "scripts": ["main.js"]
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_idle",
+      "js": ["content_notification.js"]
+    }
+  ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "manifest_version": 2
 }
