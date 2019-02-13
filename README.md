@@ -1,6 +1,10 @@
 # nlp_js_project
 
-### Installation
+### Instalation
+
+Use load unpacked in chrome extensions and load directiory dist
+
+### Compilation
 
 npm i
 
