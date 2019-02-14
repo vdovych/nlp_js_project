@@ -5,8 +5,8 @@ chrome.runtime.onMessage.addListener(
             "from the extension");
         console.log(request.prediction);
         if(typeof request.prediction != "undefined") {
-                const succ = request.prediction > 0.5;
-                alert((succ?"It's a technical text.\n":"It's a non-technical text.\n") +"Probability of being technical is " + request.prediction);
+                const succ = request.prediction > 0.65;
+                alert((succ?"It's a technical text.\n":"It's a non-technical text.\n") +"Probability of being technical is " + Math.floor(request.prediction*100) + "%");
                 var notification = document.createElement("div");
                 var elem = document.getElementById("nlp_ext-popup");
                 if(elem!=null){elem.parentNode.removeChild(elem);}

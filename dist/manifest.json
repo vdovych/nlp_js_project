@@ -13,6 +13,15 @@
       "js": ["content_notification.js"]
     }
   ],
+  "commands": {
+    "analysis": {
+      "suggested_key": {
+        "default": "Ctrl+Y",
+        "mac": "Command+Y"
+      },
+      "description": "Execute analysis"
+    }
+  },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "manifest_version": 2
 }

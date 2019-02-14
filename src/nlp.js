@@ -5,17 +5,28 @@ import * as tfidf from '../src/tfidf.js';
 chrome.contextMenus.create({contexts:["selection"], title:"Analyze text", id:"analyze"});
 chrome.contextMenus.create({contexts:["selection"], title:"Send text for deep analysis", id:"send_text"});
 
-chrome.contextMenus.onClicked.addListener(async function (info) {
-    console.log(info.menuItemId);
-    if(info.menuItemId == "analyze") {
-        const vals = tfidf.tfidf_transform(info.selectionText),
+
+async function analyze(info){
+    chrome.tabs.executeScript( {
+        code: "window.getSelection().toString();"
+    },async function(selection) {
+           const vals = tfidf.tfidf_transform(selection[0]),
             model = await tf.loadModel("model.json");
         const prediction = await model.predict(tf.tensor2d(vals, [1, vals.length]));
         //alert(prediction);
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-            console.log(tabs);
-            chrome.tabs.sendMessage(tabs[0].id, {prediction: prediction.get(0, 0),selection: info.selectionText});
+            chrome.tabs.sendMessage(tabs[0].id, {prediction: prediction.get(0, 0),selection:selection[0]});
         });
+    });
+}
+chrome.commands.onCommand.addListener(function(command) {
+    analyze(command);
+});
+
+chrome.contextMenus.onClicked.addListener(async function (info) {
+    console.log(info.menuItemId);
+    if(info.menuItemId == "analyze") {
+        analyze(info);
     }
     else if(info.menuItemId == "send_text"){
         var http = new XMLHttpRequest();
@@ -35,3 +46,4 @@ chrome.contextMenus.onClicked.addListener(async function (info) {
 
     }
 });
+
